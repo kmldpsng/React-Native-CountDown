@@ -27,7 +27,7 @@ componentDidMount(){
     render(){
 return(
    // []
- <EventForm  id={this.state.eventDetail.id} title={this.state.eventDetail.title} date={this.state.eventDetail.date}/>
+ <EventForm  eventDetail={this.state.eventDetail} navigation={this.props.navigation}/>
 )
 }
 }
