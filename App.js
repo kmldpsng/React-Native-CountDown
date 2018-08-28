@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "react-navigation";
 import EventList from "./EventList";
 import EventForm from "./EventForm";
-
+import EventDetail from "./EventDetail";
 
 export default createStackNavigator({
   list:{
@@ -20,9 +20,9 @@ title: 'Add an Event'
   },
   detail:{
     screen: EventDetail,
-    navigationOptions: () =>{
+    navigationOptions: () =>({
       title: 'Event Detail'
-    }
+    })
   }
 })
 

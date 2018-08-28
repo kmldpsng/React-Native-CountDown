@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Text, View, TouchableHighlight, TextInput, StyleSheet, AsyncStorage } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { formatDate } from './api'
+import uuidv4 from  'uuid/v4';
+
 const styles = StyleSheet.create({
     fieldContainer: {
         margin: 20,
@@ -29,6 +31,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 5
     },
+    deleteButton:{
+        backgroundColor: '#EC4848'
+    },
     buttonText: {
         color: '#fff',
         fontSize: 18
@@ -40,13 +45,25 @@ const styles = StyleSheet.create({
 })
 
 class EventForm extends Component {
-    state = {
-        title: null,
-        date: ''
-    };
+    constructor(props){
+        super(props)
+        console.log('I got props')
+        console.log(props.eventDetail)
+        this.state = {
+            title: null,
+            date: ''
+        };
+        if(this.props.eventDetail && Object.keys(this.props.eventDetail).length > 0){
+            this.state = this.props.eventDetail
+        }
+    }
     handleAddPress = () => {
         console.log(this.state)
-        AsyncStorage.setItem(this.state.title, JSON.stringify(this.state)).then((err)=>{ 
+        let item = JSON.parse(JSON.stringify(this.state))
+        if(!item.id){
+        item.id = uuidv4();
+        }
+        AsyncStorage.setItem(item.id, JSON.stringify(item)).then((err)=>{ 
             if(err){
                 console.log(err)
             }
@@ -54,6 +71,16 @@ class EventForm extends Component {
         this.props.navigation.goBack();
         })
     }
+    handleDeletePress = () => {
+        AsyncStorage.removeItem(this.state.id).then((err) => {
+            if(!err){
+                console.log('item removed successfully');
+            }
+        })
+    }
+    componentWillReceiveProps(nextProps) {
+        this.setState({ title: nextProps.title, date: nextProps.date, id: nextProps.id });  
+      }
     handleChangeTitle = (value) => {
         this.setState({ title: value });
     }
@@ -68,6 +95,19 @@ class EventForm extends Component {
             date
         })
         this.handleDatePickerHide();
+    }
+    _renderDelete(){
+        if(this.state.id){
+            return(
+                <TouchableHighlight
+                onPress={this.handleDeletePress}
+                style={[styles.button, styles.deleteButton]}>
+                <Text style={styles.buttonText}>Delete</Text>
+            </TouchableHighlight>
+            )
+        } else{
+            return null;
+        }
     }
     render() {
         return (
@@ -100,8 +140,9 @@ class EventForm extends Component {
                 <TouchableHighlight
                     onPress={this.handleAddPress}
                     style={styles.button}>
-                    <Text style={styles.buttonText}>Add</Text>
+                    <Text style={styles.buttonText}>{this.state.id? "Update" : "Add" }</Text>
                 </TouchableHighlight>
+                {this._renderDelete()}
             </View>
         )
     }
