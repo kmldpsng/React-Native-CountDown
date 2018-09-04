@@ -147,6 +147,7 @@ class EventForm extends Component {
                         editable={!this.state.showDatePicker}
                         value={formatDate(this.state.date.toString())}
                         onFocus={this.handleDatePress}
+                        onPress={this.handleDatePress}
                         underlineColorAndroid='rgba(0,0,0,0)'
                     />
                     <DateTimePicker
