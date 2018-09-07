@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { FlatList, Text, StyleSheet, Vibration, AsyncStorage, TouchableHighlight } from "react-native";
 import ActionButton from 'react-native-action-button'
 import EventCard from "./EventCard";
+import AlertEvent from './AlertEvent'
 
 const style = StyleSheet.create({
     list: {
@@ -29,14 +30,26 @@ class Eventlist extends Component {
         setTimeout(() => {
             Vibration.cancel();
         }, 0)
-        // setInterval(() => {
-        //     this.setState({
-        //         events: this.state.events.map((evt) => ({
-        //             ...evt,
-        //             timer: Date.now()
-        //         }))
-        //     })
-        // }, 1000)
+        setInterval(() => {
+            this.setState({
+                events: this.state.events.map((evt) => ({
+                    ...evt,
+                    timer: Date.now()
+                }))
+            })
+            this.state.events.some((element, index, arr) => {
+                console.log('I have det diff')
+                
+                let diff = (new Date(element.date).getTime() - new Date().getTime())/1000;
+                console.log(diff);
+                if (0 <= diff && diff <= 60) {
+                    this.setState({ alertEvent: element })
+                    this.props.navigation.navigate("alert", { event: JSON.stringify(this.state.alertEvent)})
+                    
+                }
+            })
+        }, 1000)
+
         this.props.navigation.addListener('didFocus', () => {
             Promise.all(AsyncStorage.getAllKeys().then((keys) => {
                 AsyncStorage.multiGet(keys).then((values) => {
@@ -44,15 +57,6 @@ class Eventlist extends Component {
                     let removeCount = 0;
                     values.forEach(item => {
                         item[1] = JSON.parse(item[1]);
-                        if (!item[1].id) {
-                            removeCount++;
-                            console.log('item need to be removed item ' + removeCount + ' ' + item[1].title);
-                            AsyncStorage.removeItem(item[1].title).then((err) => {
-                                if (!err) {
-                                    console.log('removed item ' + item[1].title);
-                                }
-                            })
-                        }
                         item[1].date = new Date(item[1].date)
                         events.push(item[1])
                     })
@@ -80,20 +84,24 @@ class Eventlist extends Component {
 
         this.props.navigation.navigate("form");
     }
+
     render() {
         return [
-            <FlatList
-                key="flatlist"
-                style={style.list}
-                data={this.state.events}
-                renderItem={
-                    ({ item }) => <TouchableHighlight
-                        onPress={() => this.handleTouchPress(item.id)} >
-                        <EventCard event={item} />
-                    </TouchableHighlight>
-                }
-                keyExtractor={item => item.title}
-            />,
+            
+                <FlatList
+                    key="flatlist"
+                    style={style.list}
+                    data={this.state.events}
+                    renderItem={
+                        ({ item }) => <TouchableHighlight
+                            onPress={() => this.handleTouchPress(item.id)} >
+                            <EventCard event={item} />
+                        </TouchableHighlight>
+                    }
+                    keyExtractor={item => item.title}
+                />
+            
+            ,
             <ActionButton
                 key="fab"
                 onPress={this.handleAddEvent}

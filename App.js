@@ -3,6 +3,7 @@ import { createStackNavigator } from "react-navigation";
 import EventList from "./EventList";
 import EventForm from "./EventForm";
 import EventDetail from "./EventDetail";
+import AlertEvent from "./AlertEvent";
 
 export default createStackNavigator({
   list:{
@@ -22,6 +23,12 @@ title: 'Add an Event'
     screen: EventDetail,
     navigationOptions: () =>({
       title: 'Event Detail'
+    })
+  },
+  alert:{
+    screen: AlertEvent,
+    navigationOptions: () =>({
+      title: 'Alert Event'
     })
   }
 })

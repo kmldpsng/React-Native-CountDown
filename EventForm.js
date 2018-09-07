@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, View, TouchableHighlight, TextInput, StyleSheet, AsyncStorage } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import { formatDate } from './api'
+import { formatDateTime } from './api'
 import uuidv4 from 'uuid/v4';
 
 const styles = StyleSheet.create({
@@ -93,7 +93,7 @@ class EventForm extends Component {
             }
             this.props.navigation.goBack();
         })
-
+        
     }
     componentWillReceiveProps(nextProps) {
         console.log('I got next props');
@@ -145,7 +145,7 @@ class EventForm extends Component {
                         placeholder="Event Date"
                         spellCheck={false}
                         editable={!this.state.showDatePicker}
-                        value={formatDate(this.state.date.toString())}
+                        value={formatDateTime(this.state.date.toString())}
                         onFocus={this.handleDatePress}
                         onPress={this.handleDatePress}
                         underlineColorAndroid='rgba(0,0,0,0)'
